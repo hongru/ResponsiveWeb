@@ -31,9 +31,12 @@
                     </ul>
                 </nav>
                 
-                <div class="hd-more">
-                    <p class="hdm-1">Contact</p>
-                    <p class="hdm-2">Let's Be Your Friends!</p>
+                <div class="hd-more" id="hd-more">
+                <script type="text/tmpl" id="more-tmpl">
+                    <% for (var i = 0; i < data.length; i ++) { %>
+                        <p class="hdm-<%=(i+1)%>"><%= data[i] %></p>
+                    <% } %>
+                </script>
                 </div>
             </div>
         </header>
@@ -42,10 +45,10 @@
             <div id="gallery">
                 <script type="text/tmpl" id="gallery-tmpl">
                 <ul class="gallery-con">
-                    <li class="gc-1 current">Some Time</li>
-                    <li class="gc-2">I want to...</li>
-                    <li class="gc-3">Try your best</li>
-                    <li class="gc-4">Hey, Guys</li>
+                    <% for (var i = 0; i < data.gallery.length; i ++)  {%>
+                    <% var curCls = i==0 ? " current" : "" %>
+                        <li class="gc-<%=(i+1)%><%= curCls %>"><%= data.gallery[i].text %></li>
+                    <% } %>
                 </ul>
                 
                 <ul class="gallery-ctrl">
@@ -120,32 +123,44 @@
     <script>
         $(function () {
         
+            var $r = new ResponsiveRequestsCollection({
+                'default': './data/jsonp/phone_1.js',
+                'more': './data/jsonp/more.js'
+            },{
+                'default': renderOnce_default,
+                'more': renderOnce_more
+            },{
+                'w<=992': ['default'],
+                'w>992': ['default', 'more']
+            });
+            
             function renderOnce_default () {
-                //hide or remove 'More Parts' only once
-                console.log(11)
+                $.ajax({
+                    dataType: 'jsonp',
+                    jsonpCallback: 'phone_1',
+                    url: './data/jsonp/phone_1.js',
+                    success: function (o) {
+                        console && console.log('"phone_1" data loaded');
+                        //render
+                        var html = jstemplate(document.getElementById('gallery-tmpl').innerHTML, o);
+                        document.getElementById('gallery').innerHTML = html;
+                    }
+                });
             }
             
-            function renderOnce_more () {
-                //render & show More parts once
-                console.log(22);
+            function renderOnce_more () { 
+                $.ajax({
+                    dataType: 'jsonp',
+                    jsonpCallback: 'more',
+                    url: './data/jsonp/more.js',
+                    success: function (o) {
+                        console.log('"more" data loaded');
+                        var html = jstemplate(document.getElementById('more-tmpl').innerHTML, o);
+                        document.getElementById('hd-more').innerHTML = html;
+                    }
+                })
             }
-        
-            var $r = new ResponsiveResizer({
-                'w<=320': renderOnce_default,
-                'w>320': renderOnce_more
-            });
-            
-            $.ajax({
-                dataType: 'jsonp',
-                jsonpCallback: 'phone_1',
-                url: './data/jsonp/phone_1.js',
-                success: function (o) {
-                    console && console.log(o);
-                    //render
-                }
-            });
-            
-            
+
         });
     </script>
 </body>
