@@ -146,9 +146,9 @@ body {
     display: none;
 }
 .gallery-con li.current {
-    display: block;
     text-align: center;
     display: -webkit-box;
+    *display: block;
 }
 .gc-1 {
     background: #C7250E;
