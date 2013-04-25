@@ -146,6 +146,8 @@ body {
     display: none;
 }
 .gallery-con li.current {
+    display: block;
+    text-align: center;
     display: -webkit-box;
 }
 .gc-1 {
